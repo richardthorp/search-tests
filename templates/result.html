@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+{% for result in results %}
+<div>
+    {{ result.name, result.cuisine  }}
+</div>
+
+{% endfor %}
+<a href="{{ url_for('search') }}">back</a>
+{% endblock %}
