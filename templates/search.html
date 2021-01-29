@@ -6,8 +6,14 @@
     <input type="text" name="search" id="search">
     <input type="submit" value="Submit">
 </form>
-<div>
-    {{ result }}
-</div>
+<span class="keyword">
+    <a href="{{  url_for('keyword_search', keyword= 'Food') }}">"Food"</a> 
+</span>
+<span class="keyword">
+    <a href="{{  url_for('keyword_search', keyword= 'Asia') }}">"Asia"</a> 
+</span>
+<span class="keyword">
+    <a href="{{  url_for('keyword_search', keyword= 'Bar')}}">"Bar"</a> 
+</span>
 
 {% endblock %}

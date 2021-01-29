@@ -23,10 +23,17 @@ mongo.db.restaurants.create_index([("name", "text"),("cuisine", "text")])
 def search():
     if request.method == "POST":
         search_term = request.form.get("search")
-        results = mongo.db.restaurants.find({"$text": {"$search": search_term}})
+        results = mongo.db.restaurants.find({"$text":
+                                            {"$search": search_term}})
         return render_template("result.html", results=results)
 
     return render_template("search.html")
+
+
+@app.route("/result/<keyword>")
+def keyword_search(keyword):
+    results = mongo.db.restaurants.find({"$text": {"$search": keyword}})
+    return render_template("result.html", results=results)
 
 
 @app.route("/result")
@@ -38,14 +45,3 @@ if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
             port=int(os.environ.get("PORT")),
             debug=True)
-
-
-
-
-
-
-
-
-
-# results = mongo.db.restaurants.find().limit(5)
-    # return render_template("result.html", results=results)
