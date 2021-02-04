@@ -26,19 +26,30 @@ def search():
         search_term = request.form.get("search")
         results = mongo.db.restaurants.find({"$text":
                                             {"$search": search_term}})
+        page, per_page, offset = get_page_args(page_parameter='page',
+                                           per_page_parameter='per_page')
+        per_page = 9
+        offset = page * per_page
+        total = results.count()
+        paginated_results = results[offset: offset + per_page]
+        pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
         return render_template("result.html",
-                               results=results)
+                               results=paginated_results,
+                               page=page,
+                               per_page=per_page,
+                               pagination=pagination,)
     return render_template("search.html")
 
 
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
     results = mongo.db.restaurants.find({"$text": {"$search": keyword}})
-    page, per_page, offset = get_page_args(page_parameter='page', 
+    page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     # If you are hard coding the number of items per page
     # then uncomment the two lines below
-    per_page = 12
+    per_page = 9
     offset = page * per_page
 
     # Gets the total values to be used later
@@ -47,11 +58,12 @@ def keyword_search(keyword):
     # Gets all the values
     # thetests = mongo.db.mongoTestingDataBase.find()
     # Paginates the values
-    paginatedTests = results[offset: offset + per_page]
+    paginated_results = results[offset: offset + per_page]
 
-    pagination = Pagination(page=page, per_page=per_page, total=total)
+    pagination = Pagination(page=page, per_page=per_page, total=total,
+                            css_framework='bootstrap4')
     return render_template("result.html",
-                           results=paginatedTests,
+                           results=paginated_results,
                            page=page,
                            per_page=per_page,
                            pagination=pagination,

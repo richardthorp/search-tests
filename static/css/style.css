@@ -1,5 +1,6 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #E0CA3C;
 }
 
 .keyword {
@@ -25,4 +26,17 @@ body {
     padding-left: 2px;
     padding: .1em .25em;
     font-size: 150%;
+}
+
+ .page-link{
+    background-color: #E0CA3C;
+    color: #000;
+    border: 3px solid #136F63;
+}
+
+.page-item.active .page-link {
+    background-color: #FFF6B3;
+    color: #000;
+    border: 3px solid #136F63;
+    
 }
