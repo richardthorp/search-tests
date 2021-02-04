@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 from flask import (
     Flask, flash, render_template,
     redirect, request, session, url_for)
+from flask_paginate import Pagination, get_page_args
 if os.path.exists("env.py"):
     import env
 
@@ -25,15 +26,36 @@ def search():
         search_term = request.form.get("search")
         results = mongo.db.restaurants.find({"$text":
                                             {"$search": search_term}})
-        return render_template("result.html", results=results)
-
+        return render_template("result.html",
+                               results=results)
     return render_template("search.html")
 
 
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
     results = mongo.db.restaurants.find({"$text": {"$search": keyword}})
-    return render_template("result.html", results=results)
+    page, per_page, offset = get_page_args(page_parameter='page', 
+                                           per_page_parameter='per_page')
+    # If you are hard coding the number of items per page
+    # then uncomment the two lines below
+    per_page = 12
+    offset = page * per_page
+
+    # Gets the total values to be used later
+    total = results.count()
+
+    # Gets all the values
+    # thetests = mongo.db.mongoTestingDataBase.find()
+    # Paginates the values
+    paginatedTests = results[offset: offset + per_page]
+
+    pagination = Pagination(page=page, per_page=per_page, total=total)
+    return render_template("result.html",
+                           results=paginatedTests,
+                           page=page,
+                           per_page=per_page,
+                           pagination=pagination,
+                           )
 
 
 @app.route("/result")

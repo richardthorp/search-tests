@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
+<a href="{{ url_for('search') }}">back</a>
+{{ pagination.links }}
 {% for result in results %}
 <div>
     <h1>{{ result.name }}</h1>
@@ -7,5 +9,6 @@
 </div>
 
 {% endfor %}
+
 <a href="{{ url_for('search') }}">back</a>
 {% endblock %}
