@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- <form method="POST" action="{{ url_for('searchbar_results') }}"> -->
-<form action="{{  url_for('searchbar_results') }}" method="POST">
+<form method="POST" action="{{ url_for('searchbar_results') }}">
     <label for="search">Search</label>
     <input type="text" name="search" id="search">
     <input type="submit">
