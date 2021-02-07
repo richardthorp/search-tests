@@ -16,4 +16,15 @@
     <input type="submit" value="Submit">
 </form>
 
+<div>
+    <!-- Already favourited - display solid heart icon and remove from db on click -->
+    {% if 1 in user.favourites %}
+    <a href="{{ url_for('favourite') }}"><i class="fas fa-heart"></i></a>
+    {% elif user.favourites == 2 %}
+    <a href="{{ url_for('favourite') }}"><i class="far fa-heart"></i></a>
+    {% else %}
+    <h1>NOPE</h1>
+    {% endif %}
+</div>
+
 {% endblock %}
