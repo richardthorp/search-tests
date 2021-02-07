@@ -93,24 +93,33 @@ def keyword_search(keyword):
                            )
 
 
+def get_average_rating():
+    ratings = mongo.db.rating.find()
+    total = 0
+    for rating in ratings:
+        total += int(rating["rating"])
+    return len(ratings)
+
+
 @app.route('/ratings', methods=["GET", "POST"])
 def ratings():
     if request.method == "POST":
-        userId = 107
-        rating = {
+        userId = 109
+        existing_rating = mongo.db.rating.find_one({"userId": userId})
+
+        if existing_rating:
+            flash("Vote already recieved")
+
+        else:
+            rating = {
                 "userId": userId,
                 "rating": request.form.get("rate")
                 }
-        existing_rating = mongo.db.ratings.find_one({"userId": userId})
-
-        if existing_rating:
             mongo.db.rating.insert_one(rating)
+            print(existing_rating)
             flash("Rating recieved")
 
-        else:
-            flash("Rating already recieved")
-
-
+    
     return render_template("ratings.html")
 
 
