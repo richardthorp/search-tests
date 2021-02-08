@@ -49,21 +49,6 @@ def searchbar_results():
                            per_page=per_page,
                            pagination=pagination)
 
-    results = list(session["results"])
-    page, per_page, offset = get_page_args(page_parameter='page',
-                                           per_page_parameter='per_page')
-    per_page = 9
-    offset = page * per_page
-    total = results.count()
-    paginated_results = results[offset: offset + per_page]
-    pagination = Pagination(page=page, per_page=per_page, total=total,
-                            css_framework='bootstrap4')
-    return render_template("result.html",
-                           results=paginated_results,
-                           page=page,
-                           per_page=per_page,
-                           pagination=pagination)
-
 
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
@@ -76,15 +61,13 @@ def keyword_search(keyword):
     # then uncomment the two lines below
     per_page = 9
     offset = page * per_page
-
     # Gets the total values to be used later
     total = results.count()
-
     # Paginates the values
     paginated_results = results[offset: offset + per_page]
-
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
+
     return render_template("result.html",
                            results=paginated_results,
                            page=page,
@@ -95,10 +78,13 @@ def keyword_search(keyword):
 
 def get_average_rating():
     ratings = mongo.db.rating.find()
-    total = 0
+    votes_total = 0
+    num_of_votes = mongo.db.rating.find().count()
     for rating in ratings:
-        total += int(rating["rating"])
-    return len(ratings)
+        votes_total += int(rating["rating"])
+    vote_average = votes_total / num_of_votes
+
+    return vote_average
 
 
 @app.route('/ratings', methods=["GET", "POST"])
@@ -118,6 +104,7 @@ def ratings():
             mongo.db.rating.insert_one(rating)
             print(existing_rating)
             flash("Rating recieved")
+<<<<<<< HEAD
     
     return render_template("ratings.html", user=userId)
 
@@ -126,6 +113,10 @@ def ratings():
 def favourite():
     userId =  mongo.db.users.find_one({"userId": 100 })
 
+=======
+
+    return render_template("ratings.html")
+>>>>>>> 71e81ef65099567e2101ecb7daeaf5b0de7d598d
 
     return render_template("ratings.html", user=userId)
 
