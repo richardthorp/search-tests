@@ -3,6 +3,10 @@ body {
     background-color: #E0CA3C;
 }
 
+.toggle_filter {
+    background-color: #136F63;
+}
+
 .keyword {
     border: 1px solid blue;
     border-radius: 5px;

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<span id="quick" class="keyword">
+    <a href="{{  url_for('filter', args= 'quick, true') }}">Quick</a> 
+</span>
+<span id="healthy" class="keyword">
+    <a href="{{  url_for('filter', args= 'healthy, true') }}">Healthy</a> 
+</span>
+<div>
+    <a href="{{  url_for('filter', args='clear') }}">CLEAR</a> 
+</div>
+
+{% if results %}
+    {% for result in results %}
+        <h1>{{ result.name }}</h1>
+    {% endfor %}
+{% endif %}
+
+{% endblock %}

@@ -108,6 +108,37 @@ def ratings():
     return render_template("ratings.html")
 
 
+@app.route('/tests')
+def tests():
+    return render_template('tests.html')
+
+
+filter_dict = {}
+
+
+@app.route('/tests/<args>')
+def filter(args):
+    if args == 'clear':
+        return render_template('tests.html')
+    else:
+        filter_dict = {}
+        # take string passed from jinja and make into list of [key, value]
+        args_array = args.replace(" ", "").split(",")
+        filter_dict[args_array[0]] = args_array[1]
+        # session["filters"].update(filter_dict)
+
+    results = mongo.db.recipes.find(filter_dict)
+    return render_template('tests.html', results=results)
+
+
+@app.route('/tests')
+def clear_filter():
+    print(session["filter"])
+    del session["filter"]
+    print(session["filter"])
+    redirect(url_for('tests'))
+
+
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"),
             port=int(os.environ.get("PORT")),
