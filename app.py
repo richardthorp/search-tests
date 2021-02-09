@@ -89,8 +89,8 @@ def get_average_rating():
 
 @app.route('/ratings', methods=["GET", "POST"])
 def ratings():
+    userId = mongo.db.users.find_one({"userId": 100 })
     if request.method == "POST":
-        userId = 109
         existing_rating = mongo.db.rating.find_one({"userId": userId})
 
         if existing_rating:
@@ -104,9 +104,21 @@ def ratings():
             mongo.db.rating.insert_one(rating)
             print(existing_rating)
             flash("Rating recieved")
+<<<<<<< HEAD
+    
+    return render_template("ratings.html", user=userId)
+
+
+@app.route('ratings', methods=["GET", "POST"])
+def favourite():
+    userId =  mongo.db.users.find_one({"userId": 100 })
+
+=======
 
     return render_template("ratings.html")
+>>>>>>> 71e81ef65099567e2101ecb7daeaf5b0de7d598d
 
+    return render_template("ratings.html", user=userId)
 
 @app.route('/tests')
 def tests():
