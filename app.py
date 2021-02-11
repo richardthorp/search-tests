@@ -31,25 +31,26 @@ def search():
 def searchbar_results():
     if request.method == "POST":
         session["search_term"] = request.form.get("search")
-        filters = request.form.items()
-        for key, value in filters:
-            print(key, value)
+    results = list(mongo.db.restaurants.find({"$text":
+                                        {"$search": session["search_term"]}}))
+    filters = request.form.items()
+    filtered_results = []
+    for key, value in filters:
+        if key != "search":
+            filtered_results += [obj for obj in results if obj[key] == value]
 
-    #     list_results = list(mongo.db.restaurants.find(
-    #  {"$text": {"$search": session["search_term"]}}))
-    #     session["results"] = list_results
-
-    results = mongo.db.restaurants.find({"$text":
-                                        {"$search": session["search_term"]}})
+    print(filtered_results)
 
     # Pagination variables
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     per_page = 9
     offset = page * per_page
-    total = mongo.db.restaurants.find({"$text":
-                                        {"$search": session["search_term"]}}).count()
-    paginated_results = results[offset: offset + per_page]
+    total = mongo.db.restaurants.count_documents({"$text":
+                                        {"$search": session["search_term"]}})
+    # paginated_results = results[offset: offset + per_page]
+    # paginated_results = filtered_results
+    paginated_results = results
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
     # End pagination variables
