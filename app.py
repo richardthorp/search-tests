@@ -53,7 +53,7 @@ def searchbar_results():
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
     results = mongo.db.restaurants.find({"$text":
-                                            {"$search": keyword}})
+                                        {"$search": keyword}})
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
 
@@ -89,7 +89,7 @@ def get_average_rating():
 
 @app.route('/ratings', methods=["GET", "POST"])
 def ratings():
-    userId = mongo.db.users.find_one({"userId": 100 })
+    userId = 100
     if request.method == "POST":
         existing_rating = mongo.db.rating.find_one({"userId": userId})
 
@@ -102,45 +102,50 @@ def ratings():
                 "rating": request.form.get("rate")
                 }
             mongo.db.rating.insert_one(rating)
-            print(existing_rating)
             flash("Rating recieved")
-<<<<<<< HEAD
-    
-    return render_template("ratings.html", user=userId)
-
-
-@app.route('ratings', methods=["GET", "POST"])
-def favourite():
-    userId =  mongo.db.users.find_one({"userId": 100 })
-
-=======
-
-    return render_template("ratings.html")
->>>>>>> 71e81ef65099567e2101ecb7daeaf5b0de7d598d
 
     return render_template("ratings.html", user=userId)
 
-@app.route('/tests')
+
+# @app.route('/ratings', methods=["GET", "POST"])
+# def favourite():
+#     userId =  mongo.db.users.find_one({"userId": 100 })
+
+
+#     return render_template("ratings.html")
+
+#     return render_template("ratings.html", user=userId)
+
+@app.route('/tests', methods=["GET", "POST"])
 def tests():
+    if request.method == "POST":
+        query = {}
+        # print(dir(request.form))
+        filters = request.form.items()
+        for key, value in filters:
+            query[key] = value
+        print(query)
+        results = mongo.db.recipes.find(query)
+        return render_template('tests.html', results=results)
     return render_template('tests.html')
 
 
-filter_dict = {}
+# filter_dict = {}
 
 
-@app.route('/tests/<args>')
-def filter(args):
-    if args == 'clear':
-        return render_template('tests.html')
-    else:
-        filter_dict = {}
-        # take string passed from jinja and make into list of [key, value]
-        args_array = args.replace(" ", "").split(",")
-        filter_dict[args_array[0]] = args_array[1]
-        # session["filters"].update(filter_dict)
+# @app.route('/tests/<args>')
+# def filter(args):
+#     if args == 'clear':
+#         return render_template('tests.html')
+#     else:
+#         filter_dict = {}
+#         # take string passed from jinja and make into list of [key, value]
+#         args_array = args.replace(" ", "").split(",")
+#         filter_dict[args_array[0]] = args_array[1]
+#         # session["filters"].update(filter_dict)
 
-    results = mongo.db.recipes.find(filter_dict)
-    return render_template('tests.html', results=results)
+#     results = mongo.db.recipes.find(filter_dict)
+#     return render_template('tests.html', results=results)
 
 
 @app.route('/tests')

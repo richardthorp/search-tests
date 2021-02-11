@@ -1,20 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
 
-<span id="quick" class="keyword">
-    <a href="{{  url_for('filter', args= 'quick, true') }}">Quick</a> 
-</span>
-<span id="healthy" class="keyword">
-    <a href="{{  url_for('filter', args= 'healthy, true') }}">Healthy</a> 
-</span>
-<div>
-    <a href="{{  url_for('filter', args='clear') }}">CLEAR</a> 
-</div>
+<form method="POST" action="{{ url_for('tests') }}">
+    <div class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Filters
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <p class="text-muted">Choose a recipe type</p>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" id="meat" value="meat">
+                <label class="form-check-label" for="meat">
+                    Meat
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" id="vegetarian" value="vegetarian">
+                <label class="form-check-label" for="vegetarian">
+                    Vegetarian
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="type" id="vegan" value="vegan">
+                <label class="form-check-label" for="vegan">
+                    Vegan
+                </label>
+            </div>
+            <p class="text-muted">Add additional filters</p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" name="quick" id="quick">
+                <label class="form-check-label" for="quick">
+                    Quick
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" name="healthy" id="healthy">
+                <label class="form-check-label" for="healthy">
+                    Healthy
+                </label>
+            </div>
+            <input type="submit" value="Add filters" class="btn-success">
+        </div>
+    </div>
+</form>
 
 {% if results %}
-    {% for result in results %}
-        <h1>{{ result.name }}</h1>
-    {% endfor %}
+{% for result in results %}
+<h1>{{ result.name }}</h1>
+{% endfor %}
 {% endif %}
 
 {% endblock %}
