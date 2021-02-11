@@ -31,23 +31,35 @@ def search():
 def searchbar_results():
     if request.method == "POST":
         session["search_term"] = request.form.get("search")
+        filters = request.form.items()
+        for key, value in filters:
+            print(key, value)
+
+    #     list_results = list(mongo.db.restaurants.find(
+    #  {"$text": {"$search": session["search_term"]}}))
+    #     session["results"] = list_results
 
     results = mongo.db.restaurants.find({"$text":
                                         {"$search": session["search_term"]}})
 
+    # Pagination variables
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     per_page = 9
     offset = page * per_page
-    total = results.count()
+    total = mongo.db.restaurants.find({"$text":
+                                        {"$search": session["search_term"]}}).count()
     paginated_results = results[offset: offset + per_page]
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
+    # End pagination variables
+    
     return render_template("result.html",
                            results=paginated_results,
                            page=page,
                            per_page=per_page,
-                           pagination=pagination)
+                           pagination=pagination,
+                           searchterm=session["search_term"])
 
 
 @app.route("/result/<keyword>")

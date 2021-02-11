@@ -1,6 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 <a href="{{ url_for('search') }}">back</a>
+<form method="POST" name="filter" action="{{ url_for('searchbar_results') }}">
+
+    <label for="search">Search</label>
+    <input type="text" name="search" id="search" value="{{ searchterm }}">
+    <input type="submit">
+    <div class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Filters
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <p class="text-muted">Add additional filters</p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Manhattan" name="borough" id="borough">
+                <label class="form-check-label" for="borough">
+                    Manhattan
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="American" name="cuisine" id="cuisine">
+                <label class="form-check-label" for="cuisine">
+                    Cuisine
+                </label>
+            </div>
+        </div>
+    </div>
+</form>
 <div id="pagination_nav">{{ pagination.links }}</div>
 {% for result in results %}
 <div>
