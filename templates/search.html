@@ -1,20 +1,45 @@
 {% extends "base.html" %}
 {% block content %}
 
-<form method="POST" action="{{ url_for('searchbar_results') }}">
+<form method="POST" name="filter" action="{{ url_for('searchbar_results') }}">
+
     <label for="search">Search</label>
-    <input type="text" name="search" id="search">
+    <input type="text" name="search" id="search" value="{{ searchterm }}">
     <input type="submit">
+    <div class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Filters
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <p class="text-muted">Add additional filters</p>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Brooklyn" name="borough" id="brooklyn">
+                <label class="form-check-label" for="brooklyn">
+                    Borough : Brooklyn
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Manhattan" name="borough" id="manhattan">
+                <label class="form-check-label" for="manhattan">
+                    Borough : Manhattan
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="American" name="cuisine" id="american">
+                <label class="form-check-label" for="american">
+                    Cuisine : American
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Mexican" name="cuisine" id="mexican">
+                <label class="form-check-label" for="mexican">
+                    Cuisine : Mexican
+                </label>
+            </div>
+        </div>
+    </div>
 </form>
 
-<span class="keyword">
-    <a href="{{  url_for('keyword_search', keyword= 'Food') }}">"Food"</a> 
-</span>
-<span class="keyword">
-    <a href="{{  url_for('keyword_search', keyword= 'Asia') }}">"Asia"</a> 
-</span>
-<span class="keyword">
-    <a href="{{  url_for('keyword_search', keyword= 'Bar')}}">"Bar"</a> 
-</span>
 
 {% endblock %}

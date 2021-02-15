@@ -20,6 +20,7 @@ mongo = PyMongo(app)
 CREATE AN INDEX TO ENABLE SEARCHING
 mongo.db.restaurants.create_index([("name", "text"),("cuisine", "text")])
 """
+# find({"field1": "one"}).find({"field2": "two"})
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -31,30 +32,25 @@ def search():
 def searchbar_results():
     if request.method == "POST":
         session["search_term"] = request.form.get("search")
-    results = list(mongo.db.restaurants.find({"$text":
-                                        {"$search": session["search_term"]}}))
-    filters = request.form.items()
-    filtered_results = []
-    for key, value in filters:
-        if key != "search":
-            filtered_results += [obj for obj in results if obj[key] == value]
-
-    print(filtered_results)
+        filters = dict(request.form.items())
+        filters.pop("search")
+        search_terms = {"$text": {"$search": session["search_term"]}}
+        if filters:
+            search_terms.update(filters)
+        session["search_terms"] = search_terms
+    results = mongo.db.restaurants.find(session["search_terms"])
 
     # Pagination variables
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     per_page = 9
     offset = page * per_page
-    total = mongo.db.restaurants.count_documents({"$text":
-                                        {"$search": session["search_term"]}})
-    # paginated_results = results[offset: offset + per_page]
-    # paginated_results = filtered_results
-    paginated_results = results
+    total = mongo.db.restaurants.count_documents(session["search_terms"])
+    paginated_results = results[offset: offset + per_page]
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
     # End pagination variables
-    
+
     return render_template("result.html",
                            results=paginated_results,
                            page=page,
@@ -63,12 +59,17 @@ def searchbar_results():
                            searchterm=session["search_term"])
 
 
+# @app.route("/searchbar_results?page=<page_num>")
+
+
+
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
     results = mongo.db.restaurants.find({"$text":
-                                        {"$search": keyword}})
+                                         {"$search": keyword}})
     page, per_page, offset = get_page_args(page_parameter='page',
-                                           per_page_parameter='per_page')
+                                           per_page_parameter='per_page',
+                                           offset='offset')
 
     # If you are hard coding the number of items per page
     # then uncomment the two lines below
@@ -79,7 +80,7 @@ def keyword_search(keyword):
     # Paginates the values
     paginated_results = results[offset: offset + per_page]
     pagination = Pagination(page=page, per_page=per_page, total=total,
-                            css_framework='bootstrap4')
+                            css_framework='bootstrap4', search=True)
 
     return render_template("result.html",
                            results=paginated_results,
@@ -113,7 +114,7 @@ def ratings():
             rating = {
                 "userId": userId,
                 "rating": request.form.get("rate")
-                }
+            }
             mongo.db.rating.insert_one(rating)
             flash("Rating recieved")
 
