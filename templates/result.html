@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <a href="{{ url_for('search') }}">back</a>
-<form method="POST" name="filter" action="{{ url_for('searchbar_results') }}">
+<form method="POST" name="filter" action="{{ url_for('searchbar_results') }}" class="pt-2">
 
     <label for="search">Search</label>
     <input type="text" name="search" id="search" value="{{ searchterm }}">
     <input type="submit">
-    <div class="dropdown">
+    <div class="dropdown pt-2 pb-2">
         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
             Filters
@@ -14,41 +14,45 @@
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <p class="text-muted">Add additional filters</p>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Brooklyn" name="borough" id="brooklyn">
+                <input class="form-check-input" type="radio" value="Brooklyn" name="borough" id="brooklyn">
                 <label class="form-check-label" for="brooklyn">
                     Borough : Brooklyn
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Manhattan" name="borough" id="manhattan">
+                <input class="form-check-input" type="radio" value="Manhattan" name="borough" id="manhattan">
                 <label class="form-check-label" for="manhattan">
                     Borough : Manhattan
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="American" name="cuisine" id="american">
+                <input class="form-check-input" type="radio" value="American" name="cuisine" id="american">
                 <label class="form-check-label" for="american">
                     Cuisine : American
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="Mexican" name="cuisine" id="mexican">
+                <input class="form-check-input" type="radio" value="Mexican" name="cuisine" id="mexican">
                 <label class="form-check-label" for="mexican">
                     Cuisine : Mexican
                 </label>
             </div>
+            <input type="submit" value="FILTER!">
         </div>
     </div>
 </form>
-<div id="pagination_nav">{{ pagination.links }}</div>
+
+<a href="{{ url_for('searchbar_results', sort_by='name') }}">Sort by Name</a>
+
+<div class="row">
 {% for result in results %}
-<div>
-    <h1>{{ result.name }}</h1>
-    <p>{{ result.cuisine }}</p>
-    <p>{{ result.borough }}</p>
-</div>
-
+    <div class="col-12 col-md-6 col-lg-4">
+        <h1>{{ result.name }}</h1>
+        <p>{{ result.cuisine }}</p>
+        <p>{{ result.borough }}</p>
+    </div>
 {% endfor %}
-
+</div>
+<div id="pagination_nav" class="d-flex justify-content-center">{{ pagination.links }}</div>
 <a href="{{ url_for('search') }}">back</a>
 {% endblock %}

@@ -28,28 +28,49 @@ def search():
     return render_template("search.html")
 
 
-@app.route("/searchbar_results", methods=["GET", "POST"])
-def searchbar_results():
-    if request.method == "POST":
-        session["search_term"] = request.form.get("search")
-        filters = dict(request.form.items())
-        filters.pop("search")
-        search_terms = {"$text": {"$search": session["search_term"]}}
-        if filters:
-            search_terms.update(filters)
-        session["search_terms"] = search_terms
-    results = mongo.db.restaurants.find(session["search_terms"])
-
-    # Pagination variables
+def add_pagination(search_results):
     page, per_page, offset = get_page_args(page_parameter='page',
                                            per_page_parameter='per_page')
     per_page = 9
     offset = page * per_page
-    total = mongo.db.restaurants.count_documents(session["search_terms"])
-    paginated_results = results[offset: offset + per_page]
+    total = mongo.db.restaurants.count_documents(session["search_terms"]) - 9
+    paginated_results = search_results[offset: offset + per_page]
     pagination = Pagination(page=page, per_page=per_page, total=total,
                             css_framework='bootstrap4')
-    # End pagination variables
+
+    return paginated_results, page, per_page, pagination
+
+
+@app.route("/searchbar_results", methods=["GET", "POST"])
+def searchbar_results(**kwargs):
+    if request.method == "POST":
+        session["search_term"] = request.form.get("search")
+        filters = dict(request.form.items())
+        filters.pop("search")
+        if session["search_term"] == "":
+            search_terms = {}
+        else:
+            search_terms = {"$text": {"$search": session["search_term"]}}
+
+        if filters:
+            search_terms.update(filters)
+        session["search_terms"] = search_terms
+
+    if request.args:
+        sort_by = request.args.to_dict()["sort_by"]
+        print(sort_by)
+        search_results = mongo.db.restaurants.find(
+                         session["search_terms"]).sort(sort_by, 1)
+    else:
+        search_results = mongo.db.restaurants.find(session["search_terms"])
+
+    #     session["sort_by"] = request.args.to_dict()["sort_by"]
+    # if session["sort_by"]:
+    #     search_results = mongo.db.restaurants.find(
+    #                      session["search_terms"]).sort(session["sort_by"], 1)
+
+    (paginated_results, page,
+     per_page, pagination) = add_pagination(search_results)
 
     return render_template("result.html",
                            results=paginated_results,
@@ -59,9 +80,8 @@ def searchbar_results():
                            searchterm=session["search_term"])
 
 
-# @app.route("/searchbar_results?page=<page_num>")
-
-
+# @app.route("/searchbar_results")
+# def sort_results():
 
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
