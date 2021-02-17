@@ -8,6 +8,9 @@ from flask_paginate import Pagination, get_page_args
 if os.path.exists("env.py"):
     import env
 
+import pdb
+
+
 app = Flask(__name__)
 
 app.config["MONGO_DBNAME"] = os.environ.get("MONGO_DBNAME")
@@ -45,18 +48,19 @@ def add_pagination(search_results):
 def searchbar_results(**kwargs):
     if request.method == "POST":
         session["search_term"] = request.form.get("search")
-        filters = dict(request.form.items())
-        filters.pop("search")
         if session["search_term"] == "":
             search_terms = {}
         else:
             search_terms = {"$text": {"$search": session["search_term"]}}
 
+        filters = dict(request.form.items())
+        filters.pop("search")
         if filters:
             search_terms.update(filters)
         session["search_terms"] = search_terms
 
-    if request.args:
+    # if sort_by added to get request obj, add sort() to results
+    if request.args.to_dict().get("sort_by"):
         sort_by = request.args.to_dict()["sort_by"]
         print(sort_by)
         search_results = mongo.db.restaurants.find(
@@ -64,11 +68,7 @@ def searchbar_results(**kwargs):
     else:
         search_results = mongo.db.restaurants.find(session["search_terms"])
 
-    #     session["sort_by"] = request.args.to_dict()["sort_by"]
-    # if session["sort_by"]:
-    #     search_results = mongo.db.restaurants.find(
-    #                      session["search_terms"]).sort(session["sort_by"], 1)
-
+    # get pagination variables
     (paginated_results, page,
      per_page, pagination) = add_pagination(search_results)
 
@@ -79,9 +79,6 @@ def searchbar_results(**kwargs):
                            pagination=pagination,
                            searchterm=session["search_term"])
 
-
-# @app.route("/searchbar_results")
-# def sort_results():
 
 @app.route("/result/<keyword>")
 def keyword_search(keyword):
